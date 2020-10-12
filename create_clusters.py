@@ -37,7 +37,10 @@ def haversine_dist(lat1, lon1, lat2, lon2):
     return mi
 
 
-## this list will contain all the clusters
+
+#### create clusters for cell towers, this will contain all the users present in the range of 2 mi from the cell tower
+
+## this dict will contain all the clusters
 clusters = {}
 
 start = time.time()
@@ -70,3 +73,36 @@ for k, v in clusters.items():
     fo.write(str(k) + ': ' + str(v) + '\n\n')
 
 fo.close()    
+
+
+
+#### create clusters for users, this will contain all the cell towers present in the range of 2mi from the user
+
+user_cluster = {}
+
+start = time.time()
+
+
+for i, row in data_0.iterrows():
+
+    cell_towers['distance'] = haversine_dist(row[11], row[10], cell_towers['latitude'].values, cell_towers['longitude'].values)
+    df = cell_towers[['latitude', 'longitude', 'distance']][cell_towers['distance']<=2]
+    user_nbd = df.set_index(['latitude', 'longitude']).T.to_dict('list')
+
+    if bool(user_nbd)==True:
+      user_cluster[(row[11], row[10])] = user_nbd
+
+finish = time.time()
+
+print('\nTime needed to preprocess... ', finish-start)
+
+
+## write the results into a file
+
+f_out = 'User_clusters.txt'
+fo = open(f_out, 'w')
+
+for k, v in clusters.items():
+  fo.write(str(k) + ': ' + str(v) + '\n\n')
+
+fo.close()
