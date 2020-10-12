@@ -1,7 +1,5 @@
 python version 3.7 and above
-
 pandas 1.1.3
-
 numpy v1.19.0
 
 
